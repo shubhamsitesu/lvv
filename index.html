@@ -1,1 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💔 Don't Leave Me</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        body {
+            transition: opacity 1s ease !important;
+        }
+         
+        .chat-container {
+            width: 320px;
+            height: 520px;
+            background: rgba(20, 27, 45, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+                        0 0 20px rgba(74, 144, 226, 0.1);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
 
+        .chat-header {
+            background: linear-gradient(to right, #2c3e50, #34495e);
+            color: #ecf0f1;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .call-button {
+            background: none;
+            border: none;
+            color: #ecf0f1;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .call-button:hover {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            transform: scale(1.1);
+        }
+
+        .chat-messages {
+            height: calc(100% - 40px);
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(to bottom, rgba(20, 27, 45, 0.8), rgba(15, 20, 35, 0.9));
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            margin: 8px 5px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease-out;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .received {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .sent {
+            background: linear-gradient(135deg, #3f6791, #4a90e2);
+            color: #ffffff;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-icon {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            top: -5px;
+        }
+
+        .received .message-icon {
+            left: -10px;
+            background: #e74c3c;
+            color: white;
+        }
+
+        .sent .message-icon {
+            right: -10px;
+            background: #3498db;
+            color: white;
+        }
+
+        .typing {
+            display: inline-block;
+            padding-left: 5px;
+        }
+
+        .typing-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            margin: 0 2px;
+            opacity: 0;
+            animation: typing 1.5s infinite;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.3s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes typing {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .broken-heart {
+            color: #e74c3c;
+            font-size: 1.5em;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .floating-tear {
+            position: absolute;
+            pointer-events: none;
+            font-size: 20px;
+            animation: float-down 2.5s ease-out forwards;
+        }
+
+        @keyframes float-down {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(100px) scale(0.5); opacity: 0; }
+        }
+
+        /* Start screen */
+        #startScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 10px 10px, rgba(255,255,255,0.05) 1px, transparent 0),
+                radial-gradient(circle at 30px 30px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        #startButton {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #3f6791, #4a90e2);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        #startButton:hover {
+            background: linear-gradient(135deg, #4a7db1, #5aa0f2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.6);
+        }
+
+        /* Password container */
+        .password-container {
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 73, 94, 0.9) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 80%;
+            max-width: 300px;
+            animation: gentlePulse 3s infinite;
+            backdrop-filter: blur(10px);
+        }
+
+        .password-container p {
+            color: #ecf0f1;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        #passwordInput {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            text-align: center;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            letter-spacing: 5px;
+            color: #ecf0f1;
+        }
+
+        #passwordInput:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.4), 
+                        0 0 0 3px rgba(74, 144, 226, 0.3);
+        }
+
+        #passwordInput::placeholder {
+            color: rgba(236, 240, 241, 0.5);
+            letter-spacing: normal;
+        }
+
+        @keyframes gentlePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        body {
+            animation: bgChange 30s infinite alternate;
+        }
+
+        @keyframes bgChange {
+            0% { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+            33% { background: linear-gradient(135deg, #16213e 0%, #0f3460 50%, #1a1a2e 100%); }
+            66% { background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 50%, #16213e 100%); }
+            100% { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+        }
+
+        /* Call screen */
+        .call-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 300;
+        }
+
+        .call-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 80px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .call-status {
+            color: #ecf0f1;
+            font-size: 24px;
+            margin-bottom: 40px;
+        }
+
+        .call-controls {
+            display: flex;
+            gap: 20px;
+        }
+
+        .call-button-large {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .end-call {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
+        }
+
+        .end-call:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(231, 76, 60, 0.6);
+        }
+
+        .mute-call {
+            background: linear-gradient(135deg, #7f8c8d, #95a5a6);
+            color: white;
+            box-shadow: 0 4px 10px rgba(127, 140, 141, 0.4);
+        }
+
+        .mute-call:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(127, 140, 141, 0.6);
+        }
+
+        /* Message history */
+        .message-history {
+            color: #95a5a6;
+            font-size: 12px;
+            text-align: center;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        /* Sad emoji message styles */
+        .sad-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            pointer-events: none;
+            background: rgba(26, 26, 46, 0.8);
+        }
+        
+        .sad-word {
+            display: flex;
+            margin: 20px 0;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        .sad-emoji {
+            font-size: 50px;
+            margin: 0 15px;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .sad-heart {
+            color: #e74c3c;
+            font-size: 70px;
+            animation: pulse 1.5s infinite, float 3s ease-in-out infinite;
+        }
+        
+        .sad-tear {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            animation: fall 5s linear infinite;
+        }
+        
+        @keyframes fall {
+            to {
+                top: 100%;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+
+        .plea-text {
+            color: #ecf0f1;
+            font-size: 24px;
+            text-align: center;
+            margin: 20px;
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .user-label {
+            font-size: 10px;
+            color: rgba(236, 240, 241, 0.6);
+            margin-top: 3px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div id="startScreen">
+        <div class="password-container">
+            <p>Enter Your Birth Year (YYYY):</p>
+            <input type="password" id="passwordInput" maxlength="4" pattern="\d{4}">
+            <button id="startButton">Remembering 💔</button>
+        </div>
+    </div>
+
+    <div class="chat-container" style="display: none;">
+        <div class="chat-header">
+            <div>Memories</div>
+            <button class="call-button" id="callButton">📞</button>
+        </div>
+        <div class="chat-messages" id="chat">
+            <!-- Messages will appear here automatically -->
+        </div>
+    </div>
+
+    <div class="call-screen" id="callScreen">
+        <div class="call-avatar">💔</div>
+        <div class="call-status" id="callStatus">Calling...</div>
+        <div class="call-controls">
+            <button class="call-button-large mute-call" id="muteButton">🔇</button>
+            <button class="call-button-large end-call" id="endCallButton">📞</button>
+        </div>
+    </div>
+
+    <script>
+        // Audio context and functions
+        let audioContext;
+        let audioEnabled = false;
+        
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioEnabled = true;
+            } catch (e) {
+                console.warn("Web Audio API not supported");
+                audioEnabled = false;
+            }
+        }
+        
+        function playTone(frequency, duration, type = 'sine') {
+            if (!audioEnabled || !audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = type;
+            oscillator.frequency.value = frequency;
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+        
+        function playMessageSound() {
+            playTone(700, 0.1);
+            setTimeout(() => playTone(500, 0.1), 100);
+        }
+        
+        function playSadSound() {
+            playTone(250, 0.3);
+            setTimeout(() => playTone(200, 0.4), 300);
+            setTimeout(() => playTone(150, 0.5), 700);
+        }
+
+        // Click tear creation
+        function createTear(x, y) {
+            const tear = document.createElement('div');
+            tear.className = 'floating-tear';
+            tear.innerHTML = '💧';
+            tear.style.left = `${x - 10}px`;
+            tear.style.top = `${y - 10}px`;
+            document.body.appendChild(tear);
+            
+            setTimeout(() => {
+                tear.remove();
+            }, 2000);
+        }
+
+        // Call functionality
+        let callTimer;
+        let callSeconds = 0;
+        
+        function startCall() {
+            document.getElementById('callScreen').style.display = 'flex';
+            document.getElementById('callStatus').textContent = 'Connecting...';
+            
+            setTimeout(() => {
+                document.getElementById('callStatus').textContent = 'Ringing...';
+                playTone(400, 0.5);
+                setTimeout(() => playTone(400, 0.5), 600);
+                setTimeout(() => playTone(400, 0.5), 1200);
+                
+                setTimeout(() => {
+                    document.getElementById('callStatus').textContent = 'Call ended';
+                    playSadSound();
+                    
+                    callTimer = setInterval(() => {
+                        callSeconds++;
+                        const minutes = Math.floor(callSeconds / 60);
+                        const seconds = callSeconds % 60;
+                        document.getElementById('callStatus').textContent = `Call ended (${minutes}:${seconds.toString().padStart(2, '0')})`;
+                    }, 1000);
+                }, 3000);
+            }, 1000);
+        }
+        
+        function endCall() {
+            clearInterval(callTimer);
+            document.getElementById('callScreen').style.display = 'none';
+            callSeconds = 0;
+            
+            // Add a message about the missed call
+            const chat = document.getElementById('chat');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-history';
+            messageDiv.textContent = 'Missed call';
+            chat.appendChild(messageDiv);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function showSadMessage() {
+            const sadEmojis = {
+                "PLEASE": ["😢", "😭"],
+                "DON'T": ["💔", "😔"],
+                "LEAVE": ["😞", "😪"],
+                "ME": ["😿", "💔"],
+                "LOVE": ["❤️‍🩹", "💔"],
+                "YOU": ["😭", "💔"]
+            };
+            
+            const container = document.createElement('div');
+            container.className = 'sad-message';
+            document.body.appendChild(container);
+            
+            // Add the plea text
+            const pleaText = document.createElement('div');
+            pleaText.className = 'plea-text';
+            pleaText.textContent = "Please mujhe chhod kar mat jao... I love you...";
+            container.appendChild(pleaText);
+            
+            // Create each word with sad emojis
+            Object.entries(sadEmojis).forEach(([word, emojiTypes], wordIndex) => {
+                const wordDiv = document.createElement('div');
+                wordDiv.className = 'sad-word';
+                container.appendChild(wordDiv);
+                
+                // For "LOVE" we show the broken heart
+                if (word === "LOVE") {
+                    const heart = document.createElement('div');
+                    heart.className = 'sad-heart';
+                    heart.innerHTML = emojiTypes[0];
+                    wordDiv.appendChild(heart);
+                } 
+                // For other words, show emojis for each letter
+                else {
+                    word.split('').forEach((letter, letterIndex) => {
+                        const emoji = document.createElement('div');
+                        emoji.className = 'sad-emoji';
+                        const randomEmoji = emojiTypes[Math.floor(Math.random() * emojiTypes.length)];
+                        emoji.innerHTML = randomEmoji;
+                        wordDiv.appendChild(emoji);
+                        
+                        // Create falling tears
+                        for (let i = 0; i < 5; i++) {
+                            setTimeout(() => {
+                                const tear = document.createElement('div');
+                                tear.className = 'sad-tear';
+                                tear.innerHTML = '💧';
+                                tear.style.left = `${letterIndex * 60 + Math.random() * 40}px`;
+                                tear.style.top = `-20px`;
+                                tear.style.animationDelay = `${i * 0.5}s`;
+                                tear.style.fontSize = `${15 + Math.random() * 15}px`;
+                                wordDiv.appendChild(tear);
+                                
+                                setTimeout(() => {
+                                    tear.remove();
+                                }, 5000);
+                            }, i * 500);
+                        }
+                    });
+                }
+                
+                // Animate word in
+                setTimeout(() => {
+                    wordDiv.style.transition = 'all 1s ease-out';
+                    wordDiv.style.opacity = '1';
+                    wordDiv.style.transform = 'translateY(0)';
+                    
+                    // Add gentle floating animation
+                    setInterval(() => {
+                        wordDiv.style.transform = `translateY(${Math.sin(Date.now()/1000 + wordIndex) * 10}px)`;
+                    }, 50);
+                }, wordIndex * 500);
+            });
+            
+            // Remove after some time and return to password screen
+            setTimeout(() => {
+                container.style.transition = 'opacity 1s';
+                container.style.opacity = '0';
+                setTimeout(() => {
+                    container.remove();
+                    document.querySelector('.chat-container').style.display = 'none';
+                    document.getElementById('startScreen').style.display = 'flex';
+                    document.getElementById('passwordInput').value = '';
+                }, 1000);
+            }, 10000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const startScreen = document.getElementById('startScreen');
+            const startButton = document.getElementById('startButton');
+            const passwordInput = document.getElementById('passwordInput');
+            const chatContainer = document.querySelector('.chat-container');
+            const chat = document.getElementById('chat');
+            const callButton = document.getElementById('callButton');
+            const endCallButton = document.getElementById('endCallButton');
+            
+            // Click tears creation
+            document.addEventListener('click', (e) => {
+                if (startScreen.style.display === 'none') {
+                    createTear(e.clientX, e.clientY);
+                }
+            });
+            
+            // Call button event
+            callButton.addEventListener('click', startCall);
+            endCallButton.addEventListener('click', endCall);
+            
+            // Password protection
+            startButton.addEventListener('click', function() {
+                if (passwordInput.value === '2005') { // Change this to your special date
+                    initAudio();
+                    startScreen.style.display = 'none';
+                    chatContainer.style.display = 'block';
+                    startChat();
+                } else {
+                    alert('Try again 💔');
+                }
+            });
+            
+            // Allow pressing Enter in password field
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    startButton.click();
+                }
+            });
+            
+            function startChat() {
+                // Clear any previous messages
+                chat.innerHTML = '';
+                
+                function addMessage(text, isReceived, delay, withTyping = false) {
+                    setTimeout(() => {
+                        if (withTyping) {
+                            const typingDiv = document.createElement('div');
+                            typingDiv.className = `message ${isReceived ? 'received' : 'sent'}`;
+                            
+                            // Add icon
+                            const icon = document.createElement('div');
+                            icon.className = 'message-icon';
+                            icon.textContent = isReceived ? 'R' : 'S';
+                            typingDiv.appendChild(icon);
+                            
+                            typingDiv.innerHTML += `
+                                <div class="typing">
+                                    <span class="typing-dot"></span>
+                                    <span class="typing-dot"></span>
+                                    <span class="typing-dot"></span>
+                                </div>
+                            `;
+                            chat.appendChild(typingDiv);
+                            chat.scrollTop = chat.scrollHeight;
+                            
+                            setTimeout(() => {
+                                chat.removeChild(typingDiv);
+                                addMessage(text, isReceived, 0);
+                            }, 1500);
+                        } else {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = `message ${isReceived ? 'received' : 'sent'}`;
+                            
+                            // Add icon
+                            const icon = document.createElement('div');
+                            icon.className = 'message-icon';
+                            icon.textContent = isReceived ? 'R' : 'S';
+                            messageDiv.appendChild(icon);
+                            
+                            // Add message content
+                            const contentDiv = document.createElement('div');
+                            contentDiv.innerHTML = text;
+                            messageDiv.appendChild(contentDiv);
+                            
+                            // Add user label
+                            const labelDiv = document.createElement('div');
+                            labelDiv.className = 'user-label';
+                            labelDiv.textContent = isReceived ? 'R' : 'S';
+                            messageDiv.appendChild(labelDiv);
+                            
+                            chat.appendChild(messageDiv);
+                            chat.scrollTop = chat.scrollHeight;
+                            
+                            if (text.includes("mujhe chhod kar mat jao")) {
+                                playSadSound();
+                                showSadMessage();
+                            } else {
+                                playMessageSound();
+                            }
+                        }
+                    }, delay);
+                }
+                
+// Chat sequence in Hinglish
+addMessage("Hi <span class='broken-heart'>💔</span>", true, 1000);
+addMessage("Hello", false, 2500);
+addMessage("Mujhe tumse kuch kehna hai...", true, 4000, true);
+addMessage("Kya hua?", false, 7000);
+addMessage("Mere parents meri shaadi kar rahe hain...", true, 9000, true);
+addMessage("Kya?! Kis se?", false, 12000);
+addMessage("Koi ladka jo unhone choose kiya hai...", true, 14000, true);
+addMessage("Par humara kya hoga?", false, 17000);
+addMessage("Dekhte hai kya hota hai...", true, 18500, true);
+addMessage("Please mujhe chhod kar mat jao... I love you <span class='broken-heart'>💔</span>", false, 21000);
+
+// Add a final message about the conversation ending
+setTimeout(() => {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message-history';
+    messageDiv.textContent = 'Conversation ended';
+    chat.appendChild(messageDiv);
+    chat.scrollTop = chat.scrollHeight;
+}, 27000);
+            }
+        });
+    </script>
+</body>
+</html>
